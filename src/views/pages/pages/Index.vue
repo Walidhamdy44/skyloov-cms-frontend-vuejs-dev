@@ -28,32 +28,45 @@ onMounted(() => {
 const nextPage = () => {
     if (currentPage.value < totalPages.value) {
         currentPage.value++;
-        getPages(currentPage.value);
+        pages.value = getPaginatedData();
     }
 };
 
 const prevPage = () => {
     if (currentPage.value > 1) {
         currentPage.value--;
-        getPages(currentPage.value);
+        pages.value = getPaginatedData();
     }
 };
 
 // get the page
-const getPages = (page_number) => {
+const allPagesData = ref([]);
+const itemsPerPage = 10;
+
+const getPages = () => {
     loading.value = true;
     window.axios
-        .get('/pages?page=' + page_number)
+        .get('/pages?per_page=100') // Get all pages at once
         .then((response) => {
-            const allPages = response.data.data;
-            // Filter out pages where slug starts with "footer"
-            pages.value = allPages.filter((page) => !page.slug.startsWith('footer'));
-            totalPages.value = response.data.last_page;
-            currentPage.value = response.data.current_page;
+            // Store all non-footer pages sorted by newest first
+            allPagesData.value = response.data.data.filter((page) => !page.slug.startsWith('footer')).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            // Calculate total pages based on filtered data
+            totalPages.value = Math.ceil(allPagesData.value.length / itemsPerPage);
+            currentPage.value = 1;
+
+            // Get first page of data
+            pages.value = getPaginatedData();
         })
         .finally(() => {
             loading.value = false;
         });
+};
+
+const getPaginatedData = () => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return allPagesData.value.slice(start, end);
 };
 
 const confirmDeletePage = (editPage) => {

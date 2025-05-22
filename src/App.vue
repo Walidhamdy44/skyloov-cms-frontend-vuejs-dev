@@ -1,8 +1,10 @@
 <script setup>
+import { onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { watch } from 'vue';
 import store from './store';
 import router from './router';
+import { startSessionMonitoring } from './service/session';
 
 // toast
 const toast = useToast();
@@ -32,6 +34,12 @@ if (!sessionEnd || new Date().getTime() > Number(sessionEnd)) {
     localStorage.removeItem('access_token');
     router.push({ name: 'login' });
 }
+
+onMounted(() => {
+    if (localStorage.getItem('sessionEndIn')) {
+        startSessionMonitoring();
+    }
+});
 </script>
 
 <template>

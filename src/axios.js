@@ -23,10 +23,12 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response.status === 401) {
-            window.location.href = '/auth/login';
+        if (error.response?.status === 401) {
+            // Import dynamically to avoid circular dependency
+            import('./service/session').then(({ handleSessionExpired }) => {
+                handleSessionExpired();
+            });
         }
-
         return Promise.reject(error);
     }
 );

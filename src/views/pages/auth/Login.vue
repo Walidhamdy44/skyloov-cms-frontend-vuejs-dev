@@ -1,6 +1,7 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useToast } from 'primevue/usetoast';
 import store from '@/store';
@@ -16,6 +17,18 @@ const password = ref('');
 
 const logoUrl = computed(() => {
     return `../layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+});
+
+onMounted(() => {
+    const route = useRoute();
+    if (route.query.expired === 'true') {
+        toast.add({
+            severity: 'warn',
+            summary: 'Session Expired',
+            detail: 'Your session has expired. Please log in again.',
+            life: 5000
+        });
+    }
 });
 
 const login = () => {
@@ -53,9 +66,13 @@ const login = () => {
                 // check if any of allowedRoles array matches any of the response.data.roles array
                 if (response.data.roles.some((role) => allowedRoles.includes(role))) {
                     store.commit('login', response.data);
-                    const sessionExpiry = new Date().getTime() + 3 * 60 * 60 * 1000;
+                    const sessionExpiry = new Date().getTime() + 60 * 3 * 60 * 1000; // 3 hours
                     // Set it in localStorage
                     localStorage.setItem('sessionEndIn', sessionExpiry);
+                    // Import and start session monitoring
+                    import('@/service/session').then(({ startSessionMonitoring }) => {
+                        startSessionMonitoring();
+                    });
                     router.push({ name: 'pages' });
                 } else {
                     toast.add({
