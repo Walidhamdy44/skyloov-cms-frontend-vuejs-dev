@@ -1,0 +1,49 @@
+name: Dev Docker - CMS FRONTEND - CI/CD Pipeline
+on:
+  push:
+    branches: [ dev ]
+  workflow_dispatch:
+jobs:
+  deploy:
+    environment: development
+    runs-on: ubuntu-latest
+    steps:
+    -   name: Configure AWS Creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ACCESS_KEY_SECRET }}
+          aws-region: ${{ secrets.AWS_REGION }}
+    -   name: get runner ip address
+        id: ip
+        uses: haythem/public-ip@v1.2
+    -   name: White Listing Runner IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id sg-0b7b4d04eb48518af \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+    -   uses: appleboy/ssh-action@v1.0.0
+        name: 🎯Deploying CMS FRONTEND on Dev Environment - Docker
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            cd /home/ec2-user/frontend-cms-vue-js
+            docker-compose down
+            git checkout dev
+            git pull origin dev
+            docker-compose up -d --build
+
+    -   name: Revoking Runner IP
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id sg-0b7b4d04eb48518af \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+

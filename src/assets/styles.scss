@@ -1,0 +1,110 @@
+/* You can add global styles to this file, and also import other style files */
+
+$gutter: 1rem; //for primeflex grid system
+@import '@/assets/layout/layout.scss';
+
+/* PrimeVue */
+// @import 'primevue/resources/primevue.min.css'; // version deplicated. You must open the command line if you are using < 3.29.00
+@import 'primeflex/primeflex.scss';
+@import 'primeicons/primeicons.css';
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* Demos */
+@import '@/assets/demo/demo.scss';
+
+video {
+    max-width: 100%;
+    width: 500px;
+    height: 300px;
+}
+
+.ql-container {
+    min-height: 400px;
+}
+
+// ckedotir
+.main-container {
+    font-family: 'Lato';
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ck-content {
+    font-family: 'Lato';
+    line-height: 1.6;
+    word-break: break-word;
+    min-height: 300px !important;
+}
+
+@media print {
+    body {
+        margin: 0 !important;
+    }
+}
+// .editor-container_classic-editor .editor-container__editor {
+//     min-width: 795px;
+//     max-width: 795px;
+// }
+
+.ck-evaluation-badge {
+    display: none;
+}
+.ck-powered-by {
+    display: none;
+}
+.history-container {
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    min-height: 75vh;
+    font-size: 16px;
+    span {
+        padding-right: 3px;
+    }
+}
+
+.history-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    background-color: #fff;
+}
+.block-title {
+    padding: 15px;
+}
+.history-card h3 {
+    margin-bottom: 0.5rem;
+}
+
+.history-box {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    background-color: #fafafad7;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.history-card p {
+    margin: 0.3rem 0;
+}
+
+strong {
+    font-weight: bold;
+}
+.divider {
+    margin: 2rem 0 1rem;
+    border: none;
+    border-top: 2px solid #ccc;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+.ck-content {
+    background-color: #f8f8f8 !important;
+}
